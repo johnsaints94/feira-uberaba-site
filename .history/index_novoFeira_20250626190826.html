@@ -417,22 +417,6 @@
             transform: translateZ(0);
         }
 
-        /* Prevent animation conflicts on interactive elements */
-        button, .btn, a[role="button"], input[type="button"], input[type="submit"] {
-            -webkit-tap-highlight-color: transparent;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-
-        /* Global click state management */
-        .btn:active, button:active, [role="button"]:active {
-            animation-play-state: paused !important;
-            transition: all 0.1s ease !important;
-        }
-
         :root {
             --primary-color: #2c5530;
             --secondary-color: #6b8e23;
@@ -1091,7 +1075,7 @@
             font-weight: 600;
             font-size: 1.1rem;
             text-decoration: none;
-            transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
             border: none;
@@ -1099,15 +1083,12 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             backdrop-filter: blur(10px);
-            display: inline-block;
-            text-align: center;
         }
 
         /* Prevent animation conflicts on click */
         .btn:active {
             transition: all 0.1s ease;
-            transform: scale(0.96) !important;
-            animation: none !important;
+            transform: scale(0.98);
         }
 
         .btn:focus {
@@ -1141,14 +1122,9 @@
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 8px 25px rgba(44, 85, 48, 0.4);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 12px 35px rgba(44, 85, 48, 0.5);
             background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
-        }
-
-        .btn-primary:active {
-            transform: scale(0.96) !important;
-            box-shadow: 0 4px 15px rgba(44, 85, 48, 0.3) !important;
         }
 
         .btn-outline {
@@ -1160,32 +1136,9 @@
 
         .btn-outline:hover {
             background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px) scale(1.02);
+            transform: translateY(-3px) scale(1.02);
             border-color: rgba(255, 255, 255, 0.5);
-            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
-        }
-
-        .btn-outline:active {
-            transform: scale(0.96) !important;
-            background: rgba(255, 255, 255, 0.1) !important;
-        }
-
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-            border: 2px solid #6c757d;
-        }
-
-        .btn-secondary:hover {
-            background: #545b62;
-            border-color: #545b62;
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 8px 25px rgba(108, 117, 125, 0.3);
-        }
-
-        .btn-secondary:active {
-            transform: scale(0.96) !important;
-            background: #495057 !important;
+            box-shadow: 0 12px 35px rgba(255, 255, 255, 0.2);
         }
 
         .btn::before {
@@ -1306,6 +1259,44 @@
                 transform: translateY(0) scale(1);
                 filter: blur(0px);
             }
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: var(--accent-color);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: #e55a2b;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 107, 53, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--white);
+            border: 2px solid var(--white);
+        }
+
+        .btn-outline:hover {
+            background: var(--white);
+            color: var(--primary-color);
+            transform: translateY(-2px);
         }
 
         /* Scroll Indicator */

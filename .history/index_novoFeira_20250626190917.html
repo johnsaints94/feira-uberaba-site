@@ -417,22 +417,6 @@
             transform: translateZ(0);
         }
 
-        /* Prevent animation conflicts on interactive elements */
-        button, .btn, a[role="button"], input[type="button"], input[type="submit"] {
-            -webkit-tap-highlight-color: transparent;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-
-        /* Global click state management */
-        .btn:active, button:active, [role="button"]:active {
-            animation-play-state: paused !important;
-            transition: all 0.1s ease !important;
-        }
-
         :root {
             --primary-color: #2c5530;
             --secondary-color: #6b8e23;
@@ -1168,24 +1152,6 @@
         .btn-outline:active {
             transform: scale(0.96) !important;
             background: rgba(255, 255, 255, 0.1) !important;
-        }
-
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-            border: 2px solid #6c757d;
-        }
-
-        .btn-secondary:hover {
-            background: #545b62;
-            border-color: #545b62;
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 8px 25px rgba(108, 117, 125, 0.3);
-        }
-
-        .btn-secondary:active {
-            transform: scale(0.96) !important;
-            background: #495057 !important;
         }
 
         .btn::before {
