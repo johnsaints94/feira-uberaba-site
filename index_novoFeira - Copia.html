@@ -1,0 +1,3479 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feiras do Bairro Uberaba</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2c5530;
+            --secondary-color: #6b8e23;
+            --accent-color: #ff6b35;
+            --text-dark: #2d3748;
+            --text-light: #718096;
+            --bg-light: #f7fafc;
+            --white: #ffffff;
+            --shadow: 0 10px 25px rgba(0,0,0,0.1);
+            --light-gray: #f0f0f0;
+        }        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        /* Ensure body is scrollable when loader is hidden */
+        body.loader-hidden {
+            overflow: auto !important;
+        }
+
+        /* Loading Animation */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loader.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loader-content {
+            text-align: center;
+            color: var(--white);
+        }
+
+        .loader-logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            padding: 1rem 0;
+        }
+
+        .header.scrolled {
+            background: rgba(255, 255, 255, 0.98);
+            box-shadow: var(--shadow);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-color);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .menu-toggle span {
+            width: 25px;
+            height: 3px;
+            background: var(--text-dark);
+            margin: 3px 0;
+            transition: 0.3s;
+        }        /* Hero Section */
+        .hero {
+            height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 120%;
+            background: linear-gradient(135deg, rgba(44, 85, 48, 0.8), rgba(107, 142, 35, 0.6));
+            z-index: 1;
+            will-change: transform;
+        }
+
+        .hero-slider {
+            position: absolute;
+            top: -10%;
+            left: 0;
+            width: 100%;
+            height: 120%;
+            z-index: 0;
+            will-change: transform;
+        }
+
+        .hero-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            opacity: 0;
+            transition: opacity 2s ease-in-out;
+            will-change: transform;
+        }
+
+        .hero-slide.active {
+            opacity: 1;
+        }
+
+        /* Parallax Layers */
+        .parallax-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 120%;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            will-change: transform;
+        }
+
+        .parallax-layer-1 {
+            z-index: -3;
+            transform: translateZ(-3px) scale(4);
+        }
+
+        .parallax-layer-2 {
+            z-index: -2;
+            transform: translateZ(-2px) scale(3);
+        }
+
+        .parallax-layer-3 {
+            z-index: -1;
+            transform: translateZ(-1px) scale(2);
+        }
+
+        .hero-content {
+            text-align: center;
+            color: var(--white);
+            z-index: 2;
+            position: relative;
+            max-width: 800px;
+            padding: 0 2rem;
+        }        .hero-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            transform: translateY(50px) scale(0.9);
+            animation: sophisticatedTitleEntry 2s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards;
+            position: relative;
+            overflow: hidden;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-title::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: shimmer 3s ease-in-out 1.5s infinite;
+        }
+
+        .hero-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-color), var(--secondary-color));
+            animation: underlineExpand 1.5s ease-out 1.2s forwards;
+            border-radius: 2px;
+        }        .hero-subtitle {
+            font-size: clamp(1.1rem, 2vw, 1.3rem);
+            margin-bottom: 2rem;
+            opacity: 0;
+            transform: translateY(40px) scale(0.95);
+            animation: sophisticatedSubtitleEntry 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.8s forwards;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            letter-spacing: 0.5px;
+        }        .hero-cta {
+            display: inline-flex;
+            gap: 1rem;
+            opacity: 0;
+            transform: translateY(30px) scale(0.9);
+            animation: sophisticatedCtaEntry 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) 1.2s forwards;
+        }
+
+        /* Sophisticated Animation Keyframes */
+        @keyframes sophisticatedTitleEntry {
+            0% {
+                opacity: 0;
+                transform: translateY(50px) scale(0.9) rotateX(20deg);
+                filter: blur(10px);
+            }
+            50% {
+                opacity: 0.7;
+                transform: translateY(10px) scale(1.02) rotateX(5deg);
+                filter: blur(2px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1) rotateX(0deg);
+                filter: blur(0px);
+            }
+        }
+
+        @keyframes sophisticatedSubtitleEntry {
+            0% {
+                opacity: 0;
+                transform: translateY(40px) scale(0.95);
+                filter: blur(8px);
+            }
+            60% {
+                opacity: 0.8;
+                transform: translateY(5px) scale(1.01);
+                filter: blur(1px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: blur(0px);
+            }
+        }
+
+        @keyframes sophisticatedCtaEntry {
+            0% {
+                opacity: 0;
+                transform: translateY(30px) scale(0.9);
+                filter: blur(5px);
+            }
+            70% {
+                opacity: 0.9;
+                transform: translateY(-5px) scale(1.05);
+                filter: blur(0px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: blur(0px);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                left: -100%;
+            }
+            100% {
+                left: 100%;
+            }
+        }
+
+        @keyframes underlineExpand {
+            0% {
+                width: 0;
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                width: 100%;
+                opacity: 1;
+            }
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: var(--accent-color);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: #e55a2b;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 107, 53, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--white);
+            border: 2px solid var(--white);
+        }
+
+        .btn-outline:hover {
+            background: var(--white);
+            color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        /* Scroll Indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--white);
+            text-align: center;
+            z-index: 2;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-10px); }
+            60% { transform: translateX(-50%) translateY(-5px); }
+        }
+
+        /* Sections */
+        .section {
+            padding: 5rem 0;
+            position: relative;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }        /* About Section */
+        .about {
+            background: var(--bg-light);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .about::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: 0;
+            width: 100%;
+            height: 200%;
+            background: url('imgs/03.jpeg') center/cover;
+            opacity: 0.05;
+            z-index: 0;
+            will-change: transform;
+        }        .about .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Weather Section */
+        .weather-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--white);
+            padding: 3rem 0;
+        }
+
+        .weather-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .weather-content {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .weather-info h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+        }
+
+        .weather-info h3 i {
+            color: #ffd700;
+            margin-right: 0.5rem;
+        }
+
+        .weather-data {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .weather-loading {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .weather-current {
+            text-align: center;
+        }
+
+        .weather-temp {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .weather-desc {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+        }
+
+        .weather-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .weather-detail {
+            text-align: center;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .weather-detail i {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: #ffd700;
+        }
+
+        .weather-detail span {
+            display: block;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .weather-detail strong {
+            display: block;
+            font-size: 1.1rem;
+        }
+
+        /* Feiras Information Section */
+        .feiras-info {
+            background: var(--bg-light);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feiras-info::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: 0;
+            width: 100%;
+            height: 200%;
+            background: url('imgs/04.jpg') center/cover;
+            opacity: 0.03;
+            z-index: 0;
+            will-change: transform;
+        }
+
+        .feiras-info .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .feiras-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feira-card {
+            background: var(--white);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(44, 85, 48, 0.1);
+        }
+
+        .feira-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .feira-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--white);
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .feira-header h3 {
+            margin: 0;
+            font-size: 1.3rem;
+        }
+
+        .feira-header h3 i {
+            margin-right: 0.5rem;
+            color: var(--accent-color);
+        }
+
+        .feira-status {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .feira-status-tuesday {
+            background: rgba(255, 107, 53, 0.9);
+        }
+
+        .feira-status-saturday {
+            background: rgba(34, 197, 94, 0.9);
+        }
+
+        .feira-content {
+            padding: 2rem;
+        }
+
+        .feira-detail {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            align-items: flex-start;
+        }
+
+        .feira-detail i {
+            color: var(--accent-color);
+            font-size: 1.2rem;
+            margin-top: 0.2rem;
+            min-width: 20px;
+        }
+
+        .feira-detail strong {
+            color: var(--primary-color);
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        .feira-detail p {
+            margin: 0 0 0.2rem 0;
+            color: var(--text-dark);
+        }
+
+        .feira-detail small {
+            color: var(--text-light);
+            font-style: italic;
+        }
+
+        .feira-contact {
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-top: 1.5rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .contact-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .contact-item i {
+            color: var(--accent-color);
+            font-size: 1rem;
+            min-width: 16px;
+        }
+
+        .contact-item a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .contact-item a:hover {
+            color: var(--accent-color);
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .about-text h3 {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .about-text p {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+
+        .about-image {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .about-image img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .about-image:hover img {
+            transform: scale(1.05);
+        }
+
+        /* Products Grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .product-card {
+            background: var(--white);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .product-image {
+            height: 250px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.1);
+        }
+
+        .product-content {
+            padding: 1.5rem;
+        }
+
+        .product-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .product-description {
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+
+        .product-price {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent-color);
+        }        /* Contact Section */
+        .contact {
+            background: var(--primary-color);
+            color: var(--white);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: 0;
+            width: 100%;
+            height: 200%;
+            background: url('imgs/05.jpg') center/cover;
+            opacity: 0.1;
+            z-index: 0;
+            will-change: transform;
+        }
+
+        .contact .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .contact-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .contact-info h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .contact-info p {
+            margin-bottom: 1.5rem;
+            opacity: 0.9;
+        }
+
+        .contact-details {
+            list-style: none;
+        }
+
+        .contact-details li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .contact-details i {
+            margin-right: 1rem;
+            font-size: 1.2rem;
+            color: var(--accent-color);
+        }
+
+        .contact-form {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--text-dark);
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            height: 120px;
+            resize: vertical;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--text-dark);
+            color: var(--white);
+            padding: 3rem 0 1rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4 {
+            margin-bottom: 1rem;
+            color: var(--accent-color);
+        }
+
+        .footer-section p,
+        .footer-section li {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: var(--accent-color);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            color: var(--white);
+            transition: transform 0.3s ease;
+        }
+
+        .social-links a:hover {
+            transform: translateY(-3px);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .nav-menu {
+                position: fixed;
+                top: 80px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 80px);
+                background: var(--white);
+                flex-direction: column;
+                justify-content: start;
+                align-items: center;
+                padding-top: 2rem;
+                transition: left 0.3s ease;
+                box-shadow: var(--shadow);
+            }
+
+            .nav-menu.active {
+                left: 0;
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            .about-content,
+            .contact-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .hero-cta {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .weather-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .weather-data {
+                justify-content: center;
+            }
+
+            .weather-details {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .feiras-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .feira-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .feira-card {
+                margin-bottom: 1rem;
+            }
+
+            .weather-card {
+                margin: 0 1rem;
+            }
+        }/* Scroll to top button */
+        .scroll-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            color: var(--white);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: translateY(100px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .scroll-top.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .scroll-top:hover {
+            background: #e55a2b;
+            transform: translateY(-3px);
+        }
+
+        /* Enhanced Parallax Effects */
+        .parallax-container {
+            height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+            perspective: 1px;
+        }
+
+        .parallax-element {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+        }
+
+        .parallax-back {
+            transform: translateZ(-1px) scale(2);
+        }
+
+        .parallax-base {
+            transform: translateZ(0);
+        }
+
+        /* Smooth scrolling optimization */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        @supports (scroll-behavior: smooth) {
+            html {
+                scroll-behavior: smooth;
+            }
+        }
+
+        /* Performance optimizations for parallax */
+        .hero-slide,
+        .hero-bg,
+        .hero-slider {
+            backface-visibility: hidden;
+            perspective: 1000px;
+            transform-style: preserve-3d;
+        }
+
+        /* Additional floating effects */
+        .floating-element {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }        /* Depth layers for enhanced parallax */
+        .depth-layer-1 {
+            transform: translateZ(-100px) scale(1.1);
+        }
+
+        .depth-layer-2 {
+            transform: translateZ(-200px) scale(1.2);
+        }
+
+        .depth-layer-3 {
+            transform: translateZ(-300px) scale(1.3);
+        }
+
+        /* Additional animations */
+        @keyframes pulse-status {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.8;
+                transform: scale(1.05);
+            }
+        }
+
+        .feira-status {
+            animation: pulse-status 2s ease-in-out infinite;
+        }
+
+        /* Weather animations */
+        .weather-temp {
+            animation: float 3s ease-in-out infinite;
+        }        .weather-feels {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 0.5rem;
+        }
+
+        .rain-warning {
+            animation: fadeInUp 0.5s ease;
+        }
+
+        /* Hover effects for feira cards */
+        .feira-card:hover .feira-header {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+        }
+
+        .feira-card:hover .contact-item a {
+            color: var(--accent-color);
+        }
+
+        /* Smooth transitions */
+        .weather-detail {
+            transition: all 0.3s ease;
+        }
+
+        .weather-detail:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }        /* Other Fairs Section - De-emphasized design */
+        .other-fairs-section {
+            background-color: var(--light-gray);
+            padding: 40px 0;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .other-fairs-title {
+            font-size: 1.8rem;
+            font-weight: 500;
+            color: #666;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .other-fairs-subtitle {
+            font-size: 0.95rem;
+            color: #888;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .other-fairs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .other-fair-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #eee;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .other-fair-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba
+        }
+
+        .other-fair-item h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+
+        .other-fair-item p {
+            font-size: 0.85rem;
+            color: #777;
+            margin: 0.25rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .other-fair-item i {
+            color: var(--primary-color);
+            font-size: 0.8rem;
+            width: 12px;
+        }
+
+        /* Infographic Section */
+        .infographic-section {
+            background: var(--bg-light);
+            padding: 5rem 0;
+        }
+
+        .infographic-container {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .infographic-intro {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .intro-card {
+            background: rgba(44, 85, 48, 0.1);
+            border-radius: 10px;
+            padding: 1.5rem;
+            display: inline-block;
+            margin-bottom: 2rem;
+        }
+
+        .intro-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .info-category {
+            margin-bottom: 3rem;
+        }
+
+        .category-header {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .category-header h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .category-header i {
+            position: absolute;
+            top: 50%;
+            left: -2rem;
+            transform: translateY(-50%);
+            color: var(--accent-color);
+            font-size: 1.8rem;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .product-item {
+            background: rgba(44, 85, 48, 0.05);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .product-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .product-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-tooltip {
+            display: none;
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--text-dark);
+            padding: 0.5rem;
+            border-radius: 5px;
+            white-space: nowrap;
+            z-index: 10;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-item:hover .product-tooltip {
+            display: block;
+        }
+
+        .additional-products {
+            background: rgba(34, 197, 94, 0.1);
+            padding: 1.5rem;
+            border-radius: 10px;
+        }
+
+        .product-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .product-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .product-tag {
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+
+        .location-management {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .management-info {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .management-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .management-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .management-icon {
+            font-size: 2rem;
+            color: var(--accent-color);
+        }
+
+        .management-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--primary-color);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .statistics {
+            text-align: center;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-dark);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Mobile Styles for Infographic */
+        @media (max-width: 768px) {
+            .infographic-content {
+                display: block;
+            }
+
+            .intro-card {
+                margin-bottom: 1.5rem;
+            }
+
+            .info-category {
+                margin-bottom: 2.5rem;
+            }
+
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .product-item {
+                padding: 1rem;
+            }
+
+            .additional-products {
+                padding: 1rem;
+            }
+
+            .location-management {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .management-card {
+                width: 100%;
+            }
+
+            .statistics {
+                margin-top: 2rem;
+            }
+
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }        }
+
+        /* Vendor Section Styles */
+        .vendor-section {
+            background: linear-gradient(135deg, var(--bg-light) 0%, rgba(44, 85, 48, 0.05) 100%);
+            padding: 5rem 0;
+        }
+
+        .vendor-benefits {
+            margin-bottom: 4rem;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .benefit-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .benefit-icon {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .benefit-card h3 {
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .benefit-card p {
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        .vendor-dashboard {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 4rem;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .dashboard-header h3 {
+            color: var(--text-dark);
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .vendor-products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            min-height: 200px;
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-light);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .vendor-product-card {
+            background: var(--white);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+
+        .vendor-product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .vendor-product-image {
+            height: 180px;
+            background: linear-gradient(135deg, var(--bg-light), rgba(44, 85, 48, 0.1));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            position: relative;
+        }
+
+        .vendor-product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-badges {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 0.5rem;
+            flex-direction: column;
+        }
+
+        .product-badge {
+            background: var(--accent-color);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .product-badge.featured {
+            background: #f59e0b;
+        }
+
+        .product-badge.promotion {
+            background: #ef4444;
+        }
+
+        .vendor-product-content {
+            padding: 1.5rem;
+        }
+
+        .vendor-product-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .vendor-product-vendor {
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .vendor-product-description {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .vendor-product-price {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+        }
+
+        .vendor-product-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-whatsapp {
+            background: #25d366;
+            color: white;
+            border: none;
+            padding: 0.7rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-whatsapp:hover {
+            background: #128c7e;
+        }
+
+        .btn-edit, .btn-delete {
+            background: var(--text-light);
+            color: white;
+            border: none;
+            padding: 0.7rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .btn-edit:hover {
+            background: #3b82f6;
+        }
+
+        .btn-delete:hover {
+            background: #ef4444;
+        }
+
+        .featured-vendor-products {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .featured-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .featured-header h3 {
+            color: var(--text-dark);
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .featured-products-slider {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Product Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .product-modal {
+            background: var(--white);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.3rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: background 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .product-form {
+            padding: 2rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Enhanced Visual Effects */
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, 
+                rgba(255, 255, 255, 0.03) 25%, 
+                transparent 25%, 
+                transparent 75%, 
+                rgba(255, 255, 255, 0.03) 75%),
+                linear-gradient(-45deg, 
+                rgba(255, 255, 255, 0.03) 25%, 
+                transparent 25%, 
+                transparent 75%, 
+                rgba(255, 255, 255, 0.03) 75%);
+            background-size: 60px 60px;
+            animation: movePattern 20s linear infinite;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        @keyframes movePattern {
+            0% {
+                background-position: 0 0, 0 0;
+            }
+            100% {
+                background-position: 60px 60px, -60px 60px;
+            }
+        }
+
+        /* Floating particles effect */
+        .floating-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: floatUp 15s linear infinite;
+        }
+
+        .particle:nth-child(odd) {
+            animation-duration: 12s;
+            background: rgba(255, 107, 53, 0.4);
+        }
+
+        .particle:nth-child(3n) {
+            animation-duration: 18s;
+            background: rgba(107, 142, 35, 0.5);
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Enhanced button hover effects */
+        .btn {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        /* Smooth card animations */
+        .feira-card, .product-card, .vendor-card {
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .feira-card:hover, .product-card:hover, .vendor-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Text reveal animation */
+        .text-reveal {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .text-reveal::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: var(--accent-color);
+            animation: textReveal 2s ease-out forwards;
+        }
+
+        @keyframes textReveal {
+            0% {
+                width: 0;
+            }
+            50% {
+                width: 100%;
+            }
+            100% {
+                width: 0;
+                left: 100%;
+            }
+        }
+
+        /* Magnetic hover effect for important elements */
+        .magnetic {
+            transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .magnetic:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loader" id="loader">
+        <div class="loader-content">
+            <div class="loader-logo">🏪 Feiras Uberaba</div>
+            <p>Carregando...</p>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header" id="header">
+        <nav class="nav-container">
+            <a href="#" class="logo">🏪 Feiras Uberaba</a>            <ul class="nav-menu" id="nav-menu">
+                <li><a href="#inicio" class="nav-link">Início</a></li>
+                <li><a href="#sobre" class="nav-link">Sobre</a></li>
+                <li><a href="#feiras" class="nav-link">Feiras</a></li>
+                <li><a href="#infografico" class="nav-link">Infográfico</a></li>
+                <li><a href="#produtos" class="nav-link">Produtos</a></li>
+                <li><a href="#area-feirante" class="nav-link">Área do Feirante</a></li>
+                <li><a href="#contato" class="nav-link">Contato</a></li>
+            </ul>
+            <div class="menu-toggle" id="menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>    <!-- Hero Section -->
+    <section class="hero" id="inicio">
+        <div class="hero-bg"></div>
+        <div class="hero-slider" id="hero-slider">
+            <div class="hero-slide active" style="background-image: url('imgs/01.jpeg')"></div>
+            <div class="hero-slide" style="background-image: url('imgs/02.jpeg')"></div>
+            <div class="hero-slide" style="background-image: url('imgs/03.jpeg')"></div>
+            <div class="hero-slide" style="background-image: url('imgs/04.jpg')"></div>
+            <div class="hero-slide" style="background-image: url('imgs/05.jpg')"></div>
+            <div class="hero-slide" style="background-image: url('imgs/07.jpeg')"></div>
+        </div>
+        
+        <!-- Parallax floating elements -->
+        <div class="parallax-element parallax-back" style="background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 50px 50px; animation: float 8s ease-in-out infinite;"></div>
+        <div class="parallax-element" style="background: radial-gradient(circle, rgba(255,255,255,0.05) 2px, transparent 2px); background-size: 100px 100px; animation: float 12s ease-in-out infinite reverse;"></div>
+        
+        <div class="hero-content">
+            <h1 class="hero-title">Feiras do Bairro Uberaba</h1>
+            <p class="hero-subtitle">Descubra os sabores autênticos e produtos frescos das tradicionais feiras do bairro Uberaba. Uma experiência única de compras e cultura local.</p>
+            <div class="hero-cta">
+                <a href="#produtos" class="btn btn-primary">Explorar Produtos</a>
+                <a href="#sobre" class="btn btn-outline">Saiba Mais</a>
+            </div>
+        </div>
+        <div class="scroll-indicator floating-element">
+            <p>Role para baixo</p>
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </section>    <!-- Weather Section -->
+    <section class="section weather-section">
+        <div class="container">
+            <div class="weather-card fade-in">
+                <div class="weather-content">
+                    <div class="weather-info">
+                        <h3><i class="fas fa-cloud-sun"></i> Clima em Curitiba</h3>
+                        <p>Verifique as condições climáticas antes de visitar a feira</p>
+                    </div>
+                    <div class="weather-data" id="weather-data">
+                        <div class="weather-loading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <span>Carregando...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="section about" id="sobre">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h2 class="section-title">Tradição e Qualidade</h2>
+                <p class="section-subtitle">Há décadas as feiras do bairro Uberaba são o coração pulsante da comunidade local</p>
+            </div>
+            <div class="about-content">
+                <div class="about-text fade-in">
+                    <h3>Nossa História</h3>
+                    <p>As feiras do bairro Uberaba representam mais que um simples local de compras. São espaços de encontro, tradição e cultura, onde gerações de famílias se reúnem para oferecer o melhor da produção local.</p>
+                    <p>Com produtos frescos, artesanais e cultivados com carinho, nossas feiras mantêm viva a essência do comércio tradicional, valorizando produtores locais e oferecendo qualidade incomparável.</p>
+                    <a href="#contato" class="btn btn-primary">Fale Conosco</a>
+                </div>
+                <div class="about-image fade-in">
+                    <img src="imgs/02.jpeg" alt="Feira tradicional do bairro Uberaba">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Feiras Information Section -->
+    <section class="section feiras-info" id="feiras">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h2 class="section-title">Nossas Feiras</h2>
+                <p class="section-subtitle">Encontre a feira mais próxima de você e confira os horários de funcionamento</p>
+            </div>
+            <div class="feiras-grid">
+                <div class="feira-card fade-in">
+                    <div class="feira-header">
+                        <h3><i class="fas fa-store"></i> Feira Livre Diurna Uberaba</h3>
+                        <span class="feira-status feira-status-tuesday">3ª feira</span>
+                    </div>
+                    <div class="feira-content">
+                        <div class="feira-detail">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div>
+                                <strong>Endereço:</strong>
+                                <p>R. CEL. JOSÉ CARVALHO DE OLIVEIRA, S/N</p>
+                                <small>Entre a Rua Sargento Carlos Argemiro de Camargo e a Rua Doutor Gonzaga de Campos</small>
+                            </div>
+                        </div>
+                        <div class="feira-detail">
+                            <i class="fas fa-clock"></i>
+                            <div>
+                                <strong>Horário:</strong>
+                                <p>3ª feira, das 7h às 11h</p>
+                                <small>Período: Manhã</small>
+                            </div>
+                        </div>
+                        <div class="feira-contact">
+                            <div class="contact-item">
+                                <i class="fas fa-phone"></i>
+                                <span>156</span>
+                            </div>
+                            <div class="contact-item">
+                                <i class="fas fa-envelope"></i>
+                                <span>smsan@curitiba.pr.gov.br</span>
+                            </div>
+                            <div class="contact-item">
+                                <i class="fas fa-globe"></i>
+                                <a href="https://www.curitiba.pr.gov.br/servicos/feiras-livres-diurnas-de-curitiba/79" target="_blank">Site Oficial</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="feira-card fade-in">
+                    <div class="feira-header">
+                        <h3><i class="fas fa-store"></i> Feira Livre Diurna Vila Hauer</h3>
+                        <span class="feira-status feira-status-saturday">Sábado</span>
+                    </div>
+                    <div class="feira-content">
+                        <div class="feira-detail">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div>
+                                <strong>Endereço:</strong>
+                                <p>R. MIGUEL POHOLINK, S/N</p>
+                                <small>Ao lado da Praça Doutor Joaquim Menelau de Almeida Torres - Passarela da Vila Hauer</small>
+                            </div>
+                        </div>
+                        <div class="feira-detail">
+                            <i class="fas fa-clock"></i>
+                            <div>
+                                <strong>Horário:</strong>
+                                <p>Sábado, das 7h às 12h30</p>
+                                <small>Período: Manhã</small>
+                            </div>
+                        </div>
+                        <div class="feira-contact">
+                            <div class="contact-item">
+                                <i class="fas fa-phone"></i>
+                                <span>156</span>
+                            </div>
+                            <div class="contact-item">
+                                <i class="fas fa-envelope"></i>
+                                <span>smsan@curitiba.pr.gov.br</span>
+                            </div>
+                            <div class="contact-item">
+                                <i class="fas fa-globe"></i>
+                                <a href="https://www.curitiba.pr.gov.br/servicos/feiras-livres-diurnas-de-curitiba/79" target="_blank">Site Oficial</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>            </div>
+        </div>
+    </section>
+
+    <!-- Other Curitiba Fairs Section -->
+    <section class="section other-fairs-section">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h3 class="other-fairs-title">Outras Feiras em Curitiba</h3>
+                <p class="other-fairs-subtitle">Conheça também outras opções de feiras livres pela cidade</p>
+            </div>
+            <div class="other-fairs-grid">
+                <div class="other-fair-item fade-in">
+                    <h4>Feira Livre Diurna Água Verde A</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> R. Cel. Dulcídio, S/N</p>
+                    <p><i class="fas fa-phone"></i> 156</p>
+                </div>
+                <div class="other-fair-item fade-in">
+                    <h4>Feira Livre Diurna Água Verde B</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> R. D. Pedro I, S/N</p>
+                    <p><i class="fas fa-phone"></i> 156</p>
+                </div>
+                <div class="other-fair-item fade-in">
+                    <h4>Feira Livre Diurna Ahú</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> R. Colombo, S/N</p>
+                    <p><i class="fas fa-phone"></i> 156</p>
+                </div>
+                <div class="other-fair-item fade-in">
+                    <h4>Feira Livre Diurna Alto da Glória</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> R. Alberto Bolliger, S/N</p>
+                    <p><i class="fas fa-phone"></i> 156</p>
+                </div>
+                <div class="other-fair-item fade-in">
+                    <h4>Feira Livre Diurna Bacacheri</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> R. José Gulin, S/N</p>
+                    <p><i class="fas fa-phone"></i> 156</p>
+                </div>
+                <div class="other-fair-item fade-in">
+                    <h4>Feira Livre Diurna Bairro Alto</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> R. Adílio Ramos, S/N</p>
+                    <p><i class="fas fa-phone"></i> 156</p>
+                </div>
+                <div class="other-fair-item fade-in">
+                    <h4>Feira Livre Diurna Barreirinha</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> R. Flávio Dallegrave, S/N</p>
+                    <p><i class="fas fa-phone"></i> 156</p>
+                </div>
+                <div class="other-fair-item fade-in">
+                    <h4>Feira Livre Diurna Batel</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> Al. D. Pedro II, S/N</p>
+                    <p><i class="fas fa-phone"></i> 156</p>
+                </div>
+                <div class="other-fair-item fade-in">
+                    <h4>Feira Livre Diurna Bigorrilho</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> R. Edgard Roquete Pinto, S/N</p>
+                    <p><i class="fas fa-phone"></i> 156</p>
+                </div>
+                <div class="other-fair-item fade-in">
+                    <h4>Feira Livre Diurna Boa Vista</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> R. Nossa Senhora de Nazaré, S/N</p>
+                    <p><i class="fas fa-phone"></i> 156</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Infográfico Feiras Livres Section -->
+    <section class="section infographic-section" id="infografico">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h2 class="section-title">Feiras Livres de Curitiba</h2>
+                <p class="section-subtitle">Conheça a variedade e qualidade dos produtos oferecidos nas feiras tradicionais</p>
+            </div>
+            
+            <div class="infographic-container fade-in">
+                <div class="infographic-intro">
+                    <div class="intro-card">
+                        <div class="intro-icon">
+                            <i class="fas fa-store"></i>
+                        </div>
+                        <h3>As Feiras Livres de Curitiba</h3>
+                        <p>Comercializam especialmente hortifrutigranjeiros e são instaladas em ruas, praças e parques da cidade, em dias e horários pré-definidos.</p>
+                    </div>
+                </div>
+
+                <div class="infographic-content">
+                    <!-- Produtos Principais -->
+                    <div class="info-category main-products">
+                        <div class="category-header">
+                            <h3><i class="fas fa-apple-alt"></i> Produtos Principais</h3>
+                        </div>
+                        <div class="products-grid">
+                            <div class="product-item" data-category="hortifruti">
+                                <div class="product-icon">🥬</div>
+                                <span>Hortifrutigranjeiros</span>
+                                <div class="product-tooltip">Frutas, verduras, legumes e ovos frescos</div>
+                            </div>
+                            <div class="product-item" data-category="organicos">
+                                <div class="product-icon">🌱</div>
+                                <span>Produtos Orgânicos</span>
+                                <div class="product-tooltip">Cultivados sem agrotóxicos</div>
+                            </div>
+                            <div class="product-item" data-category="pastel">
+                                <div class="product-icon">🥟</div>
+                                <span>Pastel de Feira</span>
+                                <div class="product-tooltip">O tradicional e imperdível pastel!</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Produtos Adicionais -->
+                    <div class="info-category additional-products">
+                        <div class="category-header">
+                            <h3><i class="fas fa-shopping-basket"></i> Produtos Adicionais</h3>
+                        </div>
+                        <div class="products-showcase">
+                            <div class="product-group">
+                                <h4>Alimentação</h4>
+                                <div class="product-tags">
+                                    <span class="product-tag">🧀 Frios</span>
+                                    <span class="product-tag">🥩 Carnes</span>
+                                    <span class="product-tag">🐟 Pescados</span>
+                                    <span class="product-tag">🍝 Massas</span>
+                                    <span class="product-tag">🍪 Biscoitos</span>
+                                    <span class="product-tag">🌾 Cereais</span>
+                                    <span class="product-tag">🍽️ Alimentos Prontos</span>
+                                </div>
+                            </div>
+                            <div class="product-group">
+                                <h4>Confecções & Acessórios</h4>
+                                <div class="product-tags">
+                                    <span class="product-tag">🧤 Luvas</span>
+                                    <span class="product-tag">🧦 Meias</span>
+                                    <span class="product-tag">🧸 Brinquedos</span>
+                                    <span class="product-tag">💄 Cosméticos</span>
+                                    <span class="product-tag">👕 Roupas</span>
+                                    <span class="product-tag">📱 Acessórios</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Localização e Gestão -->
+                    <div class="info-category location-management">
+                        <div class="management-info">
+                            <div class="management-card">
+                                <div class="management-icon">
+                                    <i class="fas fa-map-marked-alt"></i>
+                                </div>
+                                                               <h4>Localização</h4>
+                                <p>Instaladas em <strong>ruas</strong>, <strong>praças</strong> e <strong>parques</strong> da cidade</p>
+                                <div class="location-features">
+                                    <span>📅 Dias pré-definidos</span>
+                                    <span>⏰ Horários específicos</span>
+                                </div>
+                            </div>
+                            <div class="management-card">
+                                <div class="management-icon">
+                                    <i class="fas fa-users-cog"></i>
+                                </div>
+                                <h4>Gestão</h4>
+                                <p>Coordenada pela <strong>Unidade de Planejamento e Gestão de Projetos</strong></p>
+                                <div class="management-badge">
+                                    <i class="fas fa-shield-alt"></i>
+                                    <span>Qualidade Garantida</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Estatísticas Interativas -->
+                    <div class="info-category statistics">
+                        <div class="category-header">
+                            <h3><i class="fas fa-chart-pie"></i> Dados das Feiras</h3>
+                        </div>
+                        <div class="stats-container">
+                            <div class="stat-item" data-count="50+">
+                                <div class="stat-number">50+</div>
+                                <div class="stat-label">Feiras pela cidade</div>
+                            </div>
+                            <div class="stat-item" data-count="200+">
+                                <div class="stat-number">200+</div>
+                                <div class="stat-label">Tipos de produtos</div>
+                            </div>
+                            <div class="stat-item" data-count="7">
+                                <div class="stat-number">7</div>
+                                <div class="stat-label">Dias da semana</div>
+                            </div>
+                            <div class="stat-item" data-count="1000+">
+                                <div class="stat-number">1000+</div>
+                                <div class="stat-label">Feirantes</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Call to Action -->
+                <div class="infographic-cta fade-in">
+                    <div class="cta-content">
+                        <h3>Visite Nossas Feiras</h3>
+                        <p>Descubra a qualidade e variedade dos produtos locais</p>
+                        <a href="#feiras" class="btn btn-primary">Ver Horários</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section class="section" id="produtos">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h2 class="section-title">Nossos Produtos</h2>
+                <p class="section-subtitle">Variedade, frescor e qualidade em cada produto oferecido</p>
+            </div>
+            <div class="products-grid">
+                <div class="product-card fade-in">
+                    <div class="product-image">
+                        <img src="imgs/01.jpeg" alt="Frutas frescas">
+                    </div>
+                    <div class="product-content">
+                        <h3 class="product-title">Frutas Frescas</h3>
+                        <p class="product-description">Frutas selecionadas diariamente, colhidas no ponto ideal de maturação.</p>
+                        <div class="product-price">A partir de R$ 3,50/kg</div>
+                    </div>
+                </div>
+                <div class="product-card fade-in">
+                    <div class="product-image">
+                        <img src="imgs/03.jpeg" alt="Verduras e legumes">
+                    </div>
+                    <div class="product-content">
+                        <h3 class="product-title">Verduras & Legumes</h3>
+                        <p class="product-description">Vegetais orgânicos e tradicionais, frescos e nutritivos.</p>
+                        <div class="product-price">A partir de R$ 2,00/kg</div>
+                    </div>
+                </div>
+                <div class="product-card fade-in">
+                    <div class="product-image">
+                        <img src="imgs/04.jpg" alt="Produtos artesanais">
+                    </div>
+                    <div class="product-content">
+                        <h3 class="product-title">Produtos Artesanais</h3>
+                        <p class="product-description">Queijos, doces e conservas feitos de forma tradicional.</p>
+                        <div class="product-price">A partir de R$ 8,00</div>
+                    </div>
+                </div>
+                <div class="product-card fade-in">
+                    <div class="product-image">
+                        <img src="imgs/05.jpg" alt="Carnes frescas">
+                    </div>
+                    <div class="product-content">
+                        <h3 class="product-title">Carnes Frescas</h3>
+                        <p class="product-description">Carnes de primeira qualidade, cortadas na hora.</p>
+                        <div class="product-price">A partir of R$ 25,00/kg</div>
+                    </div>
+                </div>
+                <div class="product-card fade-in">
+                    <div class="product-image">
+                        <img src="imgs/07.jpeg" alt="Temperos e especiarias">
+                    </div>
+                    <div class="product-content">
+                        <h3 class="product-title">Temperos & Especiarias</h3>
+                        <p class="product-description">Temperos frescos e especiarias selecionadas.</p>
+                        <div class="product-price">A partir de R$ 5,00</div>
+                    </div>
+                </div>
+                <div class="product-card fade-in">
+                    <div class="product-image">
+                        <img src="imgs/01.jpeg" alt="Comidas típicas">
+                    </div>
+                    <div class="product-content">
+                        <h3 class="product-title">Comidas Típicas</h3>
+                        <p class="product-description">Pratos tradicionais preparados com receitas de família.</p>
+                        <div class="product-price">A partir de R$ 12,00</div>
+                    </div>
+                </div>
+            </div>
+        </div>    </section>
+
+    <!-- Área do Feirante Section -->
+    <section class="section vendor-section" id="area-feirante">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h2 class="section-title">Área do Feirante</h2>
+                <p class="section-subtitle">Divulgue seus produtos e amplie suas vendas através do nosso site</p>
+            </div>
+            
+            <div class="vendor-content">
+                <!-- Vendor Benefits -->
+                <div class="vendor-benefits fade-in">
+                    <div class="benefits-grid">
+                        <div class="benefit-card">
+                            <div class="benefit-icon">
+                                <i class="fas fa-bullhorn"></i>
+                            </div>
+                            <h3>Maior Visibilidade</h3>
+                            <p>Seus produtos serão exibidos online para milhares de visitantes do site</p>
+                        </div>
+                        <div class="benefit-card">
+                            <div class="benefit-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h3>Aumento de Vendas</h3>
+                            <p>Alcance novos clientes e aumente sua receita com vendas digitais</p>
+                        </div>
+                        <div class="benefit-card">
+                            <div class="benefit-icon">
+                                <i class="fas fa-mobile-alt"></i>
+                            </div>
+                            <h3>Contato Direto</h3>
+                            <p>Clientes podem entrar em contato via WhatsApp diretamente com você</p>
+                        </div>
+                        <div class="benefit-card">
+                            <div class="benefit-icon">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <h3>Destaque Especial</h3>
+                            <p>Produtos promocionais ganham destaque especial na página principal</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vendor Dashboard -->
+                <div class="vendor-dashboard fade-in">
+                    <div class="dashboard-header">
+                        <h3><i class="fas fa-store"></i> Painel do Feirante</h3>
+                        <button class="btn btn-primary" onclick="openProductModal()">
+                            <i class="fas fa-plus"></i> Cadastrar Produto
+                        </button>
+                    </div>
+                    
+                    <div class="dashboard-stats">
+                        <div class="stat-card">
+                            <div class="stat-number" id="total-products">0</div>
+                            <div class="stat-label">Produtos Cadastrados</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="featured-products">0</div>
+                            <div class="stat-label">Em Destaque</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="views-count">0</div>
+                            <div class="stat-label">Visualizações</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="contacts-count">0</div>
+                            <div class="stat-label">Contatos Recebidos</div>
+                        </div>
+                    </div>
+
+                    <div class="vendor-products-grid" id="vendor-products-grid">
+                        <div class="empty-state">
+                            <i class="fas fa-shopping-basket"></i>
+                            <h4>Nenhum produto cadastrado</h4>
+                            <p>Clique em "Cadastrar Produto" para começar a divulgar seus produtos</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Featured Products Section -->
+                <div class="featured-vendor-products fade-in">
+                    <div class="featured-header">
+                        <h3><i class="fas fa-star"></i> Produtos em Destaque dos Feirantes</h3>
+                        <p>Produtos especiais selecionados pelos nossos feirantes parceiros</p>
+                    </div>
+                    <div class="featured-products-slider" id="featured-products-slider">
+                        <!-- Produtos em destaque serão inseridos aqui via JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Product Registration Modal -->
+    <div class="modal-overlay" id="product-modal-overlay">
+        <div class="product-modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-box"></i> Cadastrar Produto</h3>
+                <button class="modal-close" onclick="closeProductModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form class="product-form" id="product-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="vendor-name">Nome do Feirante:</label>
+                        <input type="text" id="vendor-name" required placeholder="Seu nome ou nome da banca">
+                    </div>
+                    <div class="form-group">
+                        <label for="vendor-phone">WhatsApp:</label>
+                        <input type="tel" id="vendor-phone" required placeholder="(41) 99999-9999">
+                    </div>
+                </div>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="product-name">Nome do Produto:</label>
+                        <input type="text" id="product-name" required placeholder="Ex: Tomates Orgânicos">
+                    </div>
+                    <div class="form-group">
+                        <label for="product-category">Categoria:</label>
+                        <select id="product-category" required>
+                            <option value="">Selecione uma categoria</option>
+                            <option value="frutas">🍎 Frutas</option>
+                            <option value="verduras">🥬 Verduras</option>
+                            <option value="legumes">🥕 Legumes</option>
+                            <option value="organicos">🌱 Orgânicos</option>
+                            <option value="carnes">🥩 Carnes</option>
+                            <option value="laticinios">🧀 Laticínios</option>
+                            <option value="artesanais">🏺 Artesanais</option>
+                            <option value="temperos">🌿 Temperos</option>
+                            <option value="doces">🍯 Doces</option>
+                            <option value="outros">📦 Outros</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="product-description">Descrição:</label>
+                    <textarea id="product-description" required placeholder="Descreva seu produto, qualidade, origem, etc."></textarea>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="product-price">Preço:</label>
+                        <input type="text" id="product-price" required placeholder="Ex: R$ 5,00/kg">
+                    </div>
+                    <div class="form-group">
+                        <label for="product-unit">Unidade:</label>
+                        <select id="product-unit" required>
+                            <option value="">Selecione</option>
+                            <option value="kg">por Kg</option>
+                            <option value="unidade">por Unidade</option>
+                            <option value="pacote">por Pacote</option>
+                            <option value="dúzia">por Dúzia</option>
+                            <option value="litro">por Litro</option>
+                            <option value="bandeja">por Bandeja</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="vendor-feira">Feira que atende:</label>
+                        <select id="vendor-feira" required>
+                            <option value="">Selecione a feira</option>
+                            <option value="uberaba-terca">Feira Livre Diurna Uberaba (Terça)</option>
+                            <option value="vila-hauer-sabado">Feira Livre Diurna Vila Hauer (Sábado)</option>
+                            <option value="ambas">Ambas as feiras</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-availability">Disponibilidade:</label>
+                        <select id="product-availability" required>
+                            <option value="">Selecione</option>
+                            <option value="sempre">Sempre disponível</option>
+                            <option value="sazonal">Produto sazonal</option>
+                            <option value="limitado">Estoque limitado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="product-image-url">URL da Imagem (opcional):</label>
+                    <input type="url" id="product-image-url" placeholder="https://exemplo.com/imagem.jpg">
+                    <small>Cole o link de uma imagem do seu produto</small>
+                </div>
+
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="is-featured">
+                        <label for="is-featured">
+                            <i class="fas fa-star"></i> Produto em destaque 
+                            <small>(aparecerá na página principal)</small>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="is-promotion">
+                        <label for="is-promotion">
+                            <i class="fas fa-tag"></i> Produto em promoção
+                        </label>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeProductModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Cadastrar Produto
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Contact Section -->
+    <section class="section contact" id="contato">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h2 class="section-title" style="color: white;">Entre em Contato</h2>
+                <p class="section-subtitle" style="color: rgba(255,255,255,0.8);">Venha nos visitar ou entre em contato para mais informações</p>
+            </div>
+            <div class="contact-content">
+                <div class="contact-info fade-in">
+                    <h3>Informações de Contato</h3>
+                    <p>Estamos sempre prontos para atendê-lo com o melhor em produtos frescos e atendimento personalizado.</p>
+                    <ul class="contact-details">
+                        <li>
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Bairro Uberaba, Curitiba - PR</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-clock"></i>
+                            <span>Ter a Dom: 07:00 - 14:00</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-phone"></i>
+                            <span>(41) 3333-4444</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-envelope"></i>
+                            <span>contato@feirasuberaba.com.br</span>
+                        </li>
+                    </ul>
+                </div>
+                <form class="contact-form fade-in">
+                    <div class="form-group">
+                        <label for="name">Nome:</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">E-mail:</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Mensagem:</label>
+                        <textarea id="message" name="message" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Enviar Mensagem</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Feiras Uberaba</h4>
+                    <p>Tradição, qualidade e sabor em cada produto. Valorizando a produção local e mantendo viva a cultura das feiras tradicionais.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>                <div class="footer-section">
+                    <h4>Links Rápidos</h4>
+                    <ul>
+                        <li><a href="#inicio">Início</a></li>
+                        <li><a href="#sobre">Sobre Nós</a></li>
+                        <li><a href="#feiras">Feiras</a></li>
+                        <li><a href="#produtos">Produtos</a></li>
+                        <li><a href="#contato">Contato</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Horários</h4>
+                    <ul>
+                        <li>Segunda: Fechado</li>
+                        <li>Terça a Domingo: 07:00 - 14:00</li>
+                        <li>Feriados: Consultar</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Localização</h4>
+                    <p>Bairro Uberaba<br>Curitiba - PR<br>Brasil</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Feiras do Bairro Uberaba. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll to Top Button -->
+    <button class="scroll-top" id="scroll-top">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <script>        // Loading Screen - Fixed version
+        function hideLoader() {
+            const loader = document.getElementById('loader');
+            if (loader) {
+                loader.classList.add('fade-out');
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    document.body.style.overflow = 'auto'; // Re-enable scrolling
+                    document.body.classList.add('loader-hidden'); // Add class for CSS override
+                }, 500);
+            }
+        }// Hide loader after content loads
+        window.addEventListener('load', function() {
+            // Initialize loader hiding
+            setTimeout(hideLoader, 1000); // Reduced from 1500ms to 1000ms
+            
+            // Initialize weather and feira status
+            fetchWeatherData();
+            updateFeiraStatus();
+            
+            // Update weather every 10 minutes
+            setInterval(fetchWeatherData, 600000);
+            
+            // Update feira status every minute
+            setInterval(updateFeiraStatus, 60000);
+        });
+
+        // Backup: Also try hiding loader on DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                const loader = document.getElementById('loader');
+                if (loader && loader.style.display !== 'none') {
+                    console.log('DOMContentLoaded: Attempting to hide loader');
+                    hideLoader();
+                }
+            }, 2000);
+        });
+
+        // Header Scroll Effect
+        window.addEventListener('scroll', function() {
+            const header = document.getElementById('header');
+            const scrollTop = document.getElementById('scroll-top');
+            
+            if (window.scrollY > 100) {
+                header.classList.add('scrolled');
+                scrollTop.classList.add('visible');
+            } else {
+                header.classList.remove('scrolled');
+                scrollTop.classList.remove('visible');
+            }
+        });
+
+        // Mobile Menu Toggle
+        const menuToggle = document.getElementById('menu-toggle');
+        const navMenu = document.getElementById('nav-menu');
+
+        menuToggle.addEventListener('click', function() {
+            navMenu.classList.toggle('active');
+        });
+
+        // Close mobile menu when clicking on a link
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function() {
+                navMenu.classList.remove('active');
+            });
+        });
+
+        // Hero Slider
+        const slides = document.querySelectorAll('.hero-slide');
+        let currentSlide = 0;
+
+        function nextSlide() {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide + 1) % slides.length;
+            slides[currentSlide].classList.add('active');
+        }
+
+        setInterval(nextSlide, 4000);
+
+        // Smooth Scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Scroll to Top
+        document.getElementById('scroll-top').addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Fade In Animation on Scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Product Card Interactions
+        document.querySelectorAll('.product-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Contact Form
+        document.querySelector('.contact-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Simulated form submission
+            const button = this.querySelector('button[type="submit"]');
+            const originalText = button.textContent;
+            
+            button.textContent = 'Enviando...';
+            button.disabled = true;
+            
+            setTimeout(() => {
+                button.textContent = 'Mensagem Enviada!';
+                button.style.background = '#22c55e';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '';
+                    button.disabled = false;
+                    this.reset();
+                }, 2000);
+            }, 1500);
+        });        // Parallax Effect for Hero Section and other sections
+        window.addEventListener('scroll', function() {
+            const scrolled = window.pageYOffset;
+            const rate = scrolled * -0.5;
+            const rate2 = scrolled * -0.3;
+            const rate3 = scrolled * -0.7;
+            
+            // Hero parallax
+            const heroSlider = document.querySelector('.hero-slider');
+            const heroBg = document.querySelector('.hero-bg');
+            
+            if (heroSlider) {
+                heroSlider.style.transform = `translate3d(0, ${rate}px, 0)`;
+            }
+            
+            if (heroBg) {
+                heroBg.style.transform = `translate3d(0, ${rate2}px, 0)`;
+            }
+            
+            // About section parallax
+            const aboutSection = document.querySelector('.about');
+            if (aboutSection) {
+                const aboutOffset = aboutSection.offsetTop;
+                const aboutHeight = aboutSection.offsetHeight;
+                const windowHeight = window.innerHeight;
+                
+                if (scrolled + windowHeight > aboutOffset && scrolled < aboutOffset + aboutHeight) {
+                    const aboutParallax = (scrolled - aboutOffset) * 0.3;
+                    aboutSection.querySelector('::before')?.style.setProperty('transform', `translate3d(0, ${aboutParallax}px, 0)`);
+                }
+            }
+            
+            // Contact section parallax
+            const contactSection = document.querySelector('.contact');
+            if (contactSection) {
+                const contactOffset = contactSection.offsetTop;
+                const contactHeight = contactSection.offsetHeight;
+                const windowHeight = window.innerHeight;
+                
+                if (scrolled + windowHeight > contactOffset && scrolled < contactOffset + contactHeight) {
+                    const contactParallax = (scrolled - contactOffset) * 0.2;
+                    // Apply parallax to contact background
+                }
+            }
+            
+            // Product cards parallax effect
+            const productCards = document.querySelectorAll('.product-card');
+            productCards.forEach((card, index) => {
+                const cardOffset = card.offsetTop;
+                const cardHeight = card.offsetHeight;
+                const windowHeight = window.innerHeight;
+                
+                if (scrolled + windowHeight > cardOffset && scrolled < cardOffset + cardHeight) {
+                    const cardParallax = (scrolled - cardOffset) * (0.1 * (index % 3 + 1));
+                    card.style.transform = `translateY(${cardParallax}px)`;
+                }
+            });
+        });
+
+        // Enhanced smooth parallax with requestAnimationFrame
+        let ticking = false;
+        
+        function updateParallax() {
+            const scrolled = window.pageYOffset;
+            
+            // Hero section advanced parallax
+            const heroSlides = document.querySelectorAll('.hero-slide');            heroSlides.forEach((slide, index) => {
+                if (slide.classList.contains('active')) {
+                    const speed = 0.5 + (index * 0.1);
+                    slide.style.transform = `translate3d(0, ${scrolled * speed}px, 0) scale(1.1)`;
+                }
+            });
+            
+            // Floating elements effect
+            const heroContent = document.querySelector('.hero-content');
+            if (heroContent && scrolled < window.innerHeight) {
+                heroContent.style.transform = `translate3d(0, ${scrolled * 0.3}px, 0)`;
+            }
+            
+            ticking = false;
+        }
+        
+        window.addEventListener('scroll', function() {
+            if (!ticking) {
+                requestAnimationFrame(updateParallax);
+                ticking = true;
+            }
+        });
+
+        // Dynamic Greeting Based on Time
+        function updateGreeting() {
+            const now = new Date();
+            const hour = now.getHours();
+            let greeting = '';
+            
+            if (hour < 12) {
+                greeting = 'Bom dia!';
+            } else if (hour < 18) {
+                greeting = 'Boa tarde!';
+            } else {
+                greeting = 'Boa noite!';
+            }
+            
+            // You can use this greeting in various parts of the site
+            console.log(greeting + ' Bem-vindo às Feiras do Bairro Uberaba!');
+        }
+
+        updateGreeting();        // Weather API Integration
+        async function fetchWeatherData() {
+            try {
+                const weatherContainer = document.getElementById('weather-data');
+                
+                // Usando wttr.in - serviço gratuito de clima
+                const response = await fetch('https://wttr.in/Curitiba?format=j1');
+                
+                if (!response.ok) {
+                    throw new Error('API não disponível');
+                }
+                
+                const data = await response.json();
+                displayWeatherDataWttr(data);
+                
+            } catch (error) {
+                console.log('Usando dados simulados para demonstração');
+                // Dados simulados realistas para Curitiba
+                const now = new Date();
+                const hour = now.getHours();
+                
+                let temp, desc, icon;
+                if (hour >= 6 && hour < 12) {
+                    temp = Math.floor(Math.random() * 8) + 12; // 12-20°C manhã
+                    desc = 'céu limpo pela manhã';
+                    icon = 'fas fa-sun';
+                } else if (hour >= 12 && hour < 18) {
+                    temp = Math.floor(Math.random() * 10) + 18; // 18-28°C tarde
+                    desc = 'parcialmente nublado';
+                    icon = 'fas fa-cloud-sun';
+                } else {
+                    temp = Math.floor(Math.random() * 6) + 10; // 10-16°C noite
+                    desc = 'céu nublado';
+                    icon = 'fas fa-cloud';
+                }
+                
+                const simulatedData = {
+                    name: 'Curitiba',
+                    temp: temp,
+                    description: desc,
+                    icon: icon,
+                    humidity: Math.floor(Math.random() * 30) + 60,
+                    windSpeed: (Math.random() * 4 + 1).toFixed(1),
+                    pressure: Math.floor(Math.random() * 20) + 1010,
+                    feelsLike: temp + Math.floor(Math.random() * 4) - 2
+                };
+                displaySimulatedWeather(simulatedData);
+            }
+        }
+        
+        function displayWeatherDataWttr(data) {
+            const current = data.current_condition[0];
+            const weatherContainer = document.getElementById('weather-data');
+            
+            const temp = Math.round(current.temp_C);
+            const description = current.lang_pt ? current.lang_pt[0].value : current.weatherDesc[0].value;
+            const humidity = current.humidity;
+            const windSpeed = current.windspeedKmph;
+            const pressure = current.pressure;
+            const feelsLike = Math.round(current.FeelsLikeC);
+            
+            displayWeatherUI({
+                temp, description, humidity, windSpeed: (windSpeed/3.6).toFixed(1), 
+                pressure, feelsLike
+            });
+        }
+        
+        function displaySimulatedWeather(data) {
+            displayWeatherUI(data);
+        }
+        
+        function displayWeatherUI(data) {
+            const weatherContainer = document.getElementById('weather-data');
+            const { temp, description, humidity, windSpeed, pressure, feelsLike, icon } = data;
+            
+            // Determinar ícone baseado no clima
+            let weatherIcon = icon || 'fas fa-sun';
+            if (description.toLowerCase().includes('chuva') || description.toLowerCase().includes('rain')) {
+                weatherIcon = 'fas fa-cloud-rain';
+            } else if (description.toLowerCase().includes('nublado') || description.toLowerCase().includes('cloud')) {
+                weatherIcon = 'fas fa-cloud';
+            } else if (description.toLowerCase().includes('tempestade') || description.toLowerCase().includes('storm')) {
+                weatherIcon = 'fas fa-bolt';
+            } else if (description.toLowerCase().includes('sol') || description.toLowerCase().includes('sun') || description.toLowerCase().includes('clear')) {
+                weatherIcon = 'fas fa-sun';
+            }
+            
+            // Determinar cor baseada na temperatura
+            let tempColor = '#4ade80'; // verde
+            if (temp < 10) tempColor = '#60a5fa'; // azul
+            else if (temp > 25) tempColor = '#f97316'; // laranja
+            
+            // Adicionar emoji baseado no clima
+            let weatherEmoji = '☀️';
+            if (description.toLowerCase().includes('chuva')) weatherEmoji = '🌧️';
+            else if (description.toLowerCase().includes('nublado')) weatherEmoji = '☁️';
+            else if (description.toLowerCase().includes('tempestade')) weatherEmoji = '⛈️';
+            
+            weatherContainer.innerHTML = `
+                <div class="weather-current">
+                    <div class="weather-temp" style="color: ${tempColor}">
+                        ${weatherEmoji} ${temp}°C
+                    </div>
+                    <div class="weather-desc">${description}</div>
+                    <div class="weather-feels">Sensação térmica: ${feelsLike}°C</div>
+                    <div style="font-size: 0.8rem; opacity: 0.7; margin-top: 0.5rem;">
+                        <i class="fas fa-clock"></i> Atualizado: ${new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'})}
+                    </div>
+                </div>
+                <div class="weather-details">
+                    <div class="weather-detail">
+                        <i class="fas fa-tint"></i>
+                        <strong>${humidity}%</strong>
+                        <span>Umidade</span>
+                    </div>
+                    <div class="weather-detail">
+                        <i class="fas fa-wind"></i>
+                        <strong>${windSpeed} m/s</strong>
+                        <span>Vento</span>
+                    </div>
+                    <div class="weather-detail">
+                        <i class="fas fa-thermometer-half"></i>
+                        <strong>${pressure} hPa</strong>
+                        <span>Pressão</span>
+                    </div>
+                    <div class="weather-detail">
+                        <i class="fas fa-eye"></i>
+                        <strong>10+ km</strong>
+                        <span>Visibilidade</span>
+                    </div>
+                </div>
+            `;
+            
+            // Adicionar dica de chuva
+            if (description.toLowerCase().includes('chuva') || humidity > 85) {
+                const rainWarning = document.createElement('div');
+                rainWarning.className = 'rain-warning';
+                rainWarning.innerHTML = `
+                    <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 10px; padding: 1rem; margin-top: 1rem; text-align: center;">
+                        <i class="fas fa-umbrella" style="color: #ef4444; margin-right: 0.5rem;"></i>
+                        <strong style="color: #ef4444;">Atenção!</strong> 
+                        <span style="color: rgba(255,255,255,0.9);">Possibilidade de chuva. Leve um guarda-chuva para a feira!</span>
+                    </div>
+                `;
+                weatherContainer.appendChild(rainWarning);
+            } else if (temp > 28) {
+                const heatWarning = document.createElement('div');
+                heatWarning.className = 'heat-warning';
+                heatWarning.innerHTML = `
+                    <div style="background: rgba(251, 146, 60, 0.1); border: 1px solid rgba(251, 146, 60, 0.3); border-radius: 10px; padding: 1rem; margin-top: 1rem; text-align: center;">
+                        <i class="fas fa-sun" style="color: #fb923c; margin-right: 0.5rem;"></i>
+                        <strong style="color: #fb923c;">Dia quente!</strong> 
+                        <span style="color: rgba(255,255,255,0.9);">Leve água e use protetor solar.</span>
+                    </div>
+                `;
+                weatherContainer.appendChild(heatWarning);
+            } else if (temp < 5) {
+                const coldWarning = document.createElement('div');
+                coldWarning.className = 'cold-warning';
+                coldWarning.innerHTML = `
+                    <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 10px; padding: 1rem; margin-top: 1rem; text-align: center;">
+                        <i class="fas fa-snowflake" style="color: #3b82f6; margin-right: 0.5rem;"></i>
+                        <strong style="color: #3b82f6;">Dia frio!</strong> 
+                        <span style="color: rgba(255,255,255,0.9);">Vista-se bem agasalhado para visitar a feira.</span>
+                    </div>
+                `;
+                weatherContainer.appendChild(coldWarning);
+            }
+        }
+        
+        // Função para atualizar o status das feiras baseado no dia da semana
+        function updateFeiraStatus() {
+            const today = new Date();
+            const dayOfWeek = today.getDay(); // 0 = Domingo, 1 = Segunda, ... 6 = Sábado
+            const hour = today.getHours();
+            
+            // Atualizar status da Feira Uberaba (Terça-feira)
+            const uberabaStatus = document.querySelector('.feira-status-tuesday');
+            if (dayOfWeek === 2 && hour >= 7 && hour <= 11) {
+                uberabaStatus.textContent = 'ABERTA AGORA';
+                uberabaStatus.style.background = '#22c55e';
+                uberabaStatus.style.animation = 'pulse 2s infinite';
+            } else if (dayOfWeek === 2) {
+                uberabaStatus.textContent = 'HOJE - 3ª feira';
+                uberabaStatus.style.background = 'rgba(255, 107, 53, 0.9)';
+            }
+            
+            // Atualizar status da Vila Hauer (Sábado)
+            const hauerStatus = document.querySelector('.feira-status-saturday');
+            if (dayOfWeek === 6 && hour >= 7 && hour <= 12.5) {
+                hauerStatus.textContent = 'ABERTA AGORA';
+                hauerStatus.style.background = '#22c55e';
+                hauerStatus.style.animation = 'pulse 2s infinite';
+            } else if (dayOfWeek === 6) {
+                hauerStatus.textContent = 'HOJE - Sábado';
+                hauerStatus.style.background = 'rgba(34, 197, 94, 0.9)';
+            }
+        }
+          // Enhanced Parallax Effects with Smooth Performance
+        let parallaxElements = [];
+        let isScrolling = false;
+        let lastScrollTime = 0;
+        let parallaxFrame = null;
+        
+        // Initialize enhanced parallax elements
+        function initParallax() {
+            parallaxElements = [
+                {
+                    element: document.querySelector('.hero-slider'),
+                    speed: 0.5,
+                    direction: -1,
+                    intensity: 1.2
+                },
+                {
+                    element: document.querySelector('.hero-bg'),
+                    speed: 0.3,
+                    direction: -1,
+                    intensity: 0.8
+                },
+                {
+                    element: document.querySelector('.hero-content'),
+                    speed: 0.1,
+                    direction: 1,
+                    intensity: 0.5
+                },
+                {
+                    element: document.querySelector('.hero-title'),
+                    speed: 0.15,
+                    direction: 1,
+                    intensity: 0.3,
+                    type: 'micro'
+                },
+                {
+                    element: document.querySelector('.hero-subtitle'),
+                    speed: 0.12,
+                    direction: 1,
+                    intensity: 0.2,
+                    type: 'micro'
+                }
+            ];
+            
+            // Add floating elements
+            document.querySelectorAll('.parallax-element').forEach((el, index) => {
+                parallaxElements.push({
+                    element: el,
+                    speed: 0.2 + (index * 0.1),
+                    direction: index % 2 === 0 ? -1 : 1,
+                    intensity: 0.6,
+                    type: 'float'
+                });
+            });
+            
+            // Add section backgrounds
+            const sections = document.querySelectorAll('.about, .contact, .feiras-info');
+            sections.forEach((section, index) => {
+                parallaxElements.push({
+                    element: section,
+                    speed: 0.08 + (index * 0.02),
+                    direction: -1,
+                    intensity: 0.4,
+                    property: 'backgroundPosition',
+                    type: 'background'
+                });
+            });
+        }
+        
+        // Smooth parallax update with RAF
+        function updateParallax() {
+            if (parallaxFrame) {
+                cancelAnimationFrame(parallaxFrame);
+            }
+            
+            parallaxFrame = requestAnimationFrame(() => {
+                const scrollTop = window.pageYOffset;
+                const windowHeight = window.innerHeight;
+                const documentHeight = document.documentElement.scrollHeight;
+                const scrollPercent = scrollTop / (documentHeight - windowHeight);
+                
+                parallaxElements.forEach(item => {
+                    if (!item.element) return;
+                    
+                    const elementTop = item.element.offsetTop;
+                    const elementHeight = item.element.offsetHeight;
+                    const elementBottom = elementTop + elementHeight;
+                    
+                    // Enhanced viewport detection
+                    const isInViewport = scrollTop + windowHeight > elementTop - windowHeight * 0.5 && 
+                                       scrollTop < elementBottom + windowHeight * 0.5;
+                    
+                    if (isInViewport) {
+                        const relativePos = (scrollTop - elementTop + windowHeight) / (windowHeight + elementHeight);
+                        const intensity = item.intensity || 1;
+                        
+                        switch (item.type) {
+                            case 'micro':
+                                // Micro-movements for text elements
+                                const microOffset = Math.sin(scrollPercent * Math.PI * 2) * 2 * intensity;
+                                const yPos = (scrollTop - elementTop) * item.speed * item.direction * intensity + microOffset;
+                                item.element.style.transform = `translate3d(0, ${yPos}px, 0)`;
+                                break;
+                                
+                            case 'float':
+                                // Enhanced floating animation
+                                const floatOffset = Math.sin(Date.now() * 0.001 + item.speed * 10) * 10 * intensity;
+                                const scrollOffset = (scrolled - elementTop) * item.speed * item.direction * intensity;
+                                item.element.style.transform = `translate3d(0, ${scrollOffset + floatOffset}px, 0) rotate(${floatOffset * 0.1}deg)`;
+                                break;
+                                
+                            case 'background':
+                                // Background parallax with easing
+                                const bgPos = (scrollTop - elementTop) * item.speed * item.direction * intensity;
+                                const easedPos = bgPos * (1 - Math.pow(1 - relativePos, 3));
+                                item.element.style.backgroundPosition = `center ${easedPos}px`;
+                                break;
+                                
+                            default:
+                                // Standard parallax with easing
+                                const standardOffset = (scrollTop - elementTop) * item.speed * item.direction * intensity;
+                                const easedOffset = standardOffset * (1 - Math.pow(1 - Math.min(relativePos, 1), 2));
+                                item.element.style.transform = `translate3d(0, ${easedOffset}px, 0)`;
+                        }
+                    }
+                });
+                
+                // Enhanced hero slide effects
+                const activeSlide = document.querySelector('.hero-slide.active');
+                if (activeSlide && scrollTop < windowHeight * 1.2) {
+                    const scrollRatio = scrollTop / windowHeight;
+                    const scale = 1 + (scrollRatio * 0.3);
+                    const yPos = scrollTop * 0.4;
+                    const opacity = 1 - (scrollRatio * 0.5);
+                    const blur = scrollRatio * 2;
+                    
+                    activeSlide.style.transform = `translate3d(0, ${yPos}px, 0) scale(${scale})`;
+                    activeSlide.style.filter = `blur(${blur}px)`;
+                    activeSlide.style.opacity = Math.max(opacity, 0.3);
+                }
+                
+                // Dynamic hero overlay effect
+                const heroOverlay = document.querySelector('.hero-bg');
+                if (heroOverlay && scrollTop < windowHeight) {
+                    const scrollRatio = scrollTop / windowHeight;
+                    const overlayOpacity = 0.8 + (scrollRatio * 0.2);
+                    heroOverlay.style.background = `linear-gradient(135deg, 
+                        rgba(44, 85, 48, ${overlayOpacity}), 
+                        rgba(107, 142, 35, ${overlayOpacity * 0.8}))`;
+                }
+                
+                isScrolling = false;
+            });
+        }
+        
+        // Optimized scroll listener with throttling
+        function handleScroll() {
+            if (!isScrolling) {
+                isScrolling = true;
+                updateParallax();
+            }
+        }
+        
+        // Enhanced scroll indicator animation
+        function animateScrollIndicator() {
+            const scrollIndicator = document.querySelector('.scroll-indicator');
+            if (scrollIndicator) {
+                const scrollTop = window.pageYOffset;
+                const opacity = Math.max(0, 1 - (scrollTop / window.innerHeight));
+                scrollIndicator.style.opacity = opacity;
+            }
+        }
+        
+        // Initialize all enhanced effects
+        document.addEventListener('DOMContentLoaded', function() {
+            initParallax();
+            window.addEventListener('scroll', handleScroll, { passive: true });
+            
+            // Animate scroll indicator
+            setInterval(animateScrollIndicator, 16); // 60fps
+        });
+    </script>
+</body>
+</html>
